@@ -1,0 +1,32 @@
+<div class="relative w-full h-full flex items-center justify-center animate-fade-in">
+
+    <!-- Metaphor: Empty Base -->
+    <!-- Ideally this is a high-res SVG or PNG of a sleek white desk. Using generic styling for representation -->
+
+    <!-- FLOOR GLOW -->
+    <div class="absolute bottom-[20%] w-[300px] h-[60px] bg-cyan-400/20 blur-[50px] rounded-full"></div>
+
+    <!-- DESK IMAGE (Placeholder logic: Creating a CSS shape or would use <img> in real prod) -->
+    <!-- Using a CSS representation for portability in this response, or an <img> tag if we had assets. 
+         Prompt said "desk and chair are visible but empty". -->
+
+    <div class="relative z-10 transform hover:scale-105 transition-transform duration-700">
+        <!-- New 3D Asset -->
+        <img src="/static/chair_iso.png" class="w-[500px] h-auto object-contain drop-shadow-2xl animate-float"
+            alt="Future Desk">
+
+        <!-- Overlay Status -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-20">
+            <div
+                class="flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-md rounded-full border border-cyan-100 shadow-sm hover:shadow-glow transition-shadow cursor-default">
+                <span class="relative flex h-3 w-3">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+                </span>
+                <span class="text-xs font-bold tracking-[0.2em] text-cyan-600">UNIT AVAILABLE</span>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chair OS | Resource Booking</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/ws.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'scifi-white': '#F8F9FA',
+                        'scifi-glass': 'rgba(255, 255, 255, 0.7)',
+                        'scifi-border': 'rgba(0, 240, 255, 0.3)',
+                        'scifi-glow': '#00F0FF',
+                        'scifi-text': '#1A1A1A',
+                        'scifi-muted': '#8A8A9A',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 15px rgba(0, 240, 255, 0.2)',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+
+        .desk-iso {
+            transform-style: preserve-3d;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="text-scifi-text font-sans antialiased overflow-hidden">
+
+    <div class="flex h-screen w-full relative">
+
+        <!-- Left Side: Calendar/Schedule -->
+        <aside class="w-80 glass-panel border-r border-white/50 h-full flex flex-col relative z-20 shadow-xl p-6">
+            <div class="mb-6 flex items-center gap-2 border-b border-gray-100/50 pb-4">
+                <div class="w-2 h-2 bg-cyan-400 rounded-full shadow-glow"></div>
+                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500">Temporal Data</h2>
+            </div>
+
+            <!-- Schedule List Moved Here -->
+            <div id="schedule-container" hx-get="/schedule" hx-trigger="load, every 10s, updateSchedule from:body"
+                class="flex-1 overflow-y-auto custom-scrollbar">
+                <div class="h-10 animate-pulse bg-gray-100/50 rounded"></div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Area -->
+        <main class="flex-1 flex flex-col relative z-10 items-center justify-center">
+
+            <!-- Header -->
+            <header class="absolute top-0 left-0 w-full p-6 flex justify-center items-center z-20 pointer-events-none">
+                <div class="glass-panel px-8 py-3 rounded-full pointer-events-auto flex items-center gap-4">
+                    <h1 class="text-xl font-bold tracking-widest uppercase text-gray-800">Chair<span
+                            class="text-cyan-500">OS</span></h1>
+                    <div class="w-px h-6 bg-gray-300"></div>
+                    {% if user %}
+                    <div class="flex items-center gap-2">
+                        <img src="{{ user.profile_image_url }}"
+                            class="w-6 h-6 rounded-full border border-gray-200 object-cover">
+                        <span class="text-xs font-medium uppercase tracking-wide">{{ user.username }}</span>
+                    </div>
+                    {% else %}
+                    <a href="/login"
+                        class="text-xs font-bold uppercase tracking-wide hover:text-cyan-600 transition-colors">Login</a>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- CENTRAL VISUAL METAPHOR: The Desk -->
+            <div id="desk-visual-container" hx-get="/desk-status" hx-trigger="load, every 2s, updateSchedule from:body"
+                class="relative w-full h-full flex items-center justify-center transition-all duration-500 pb-20">
+                <!-- Added pb-20 to visually move it 'higher' relative to center -->
+
+                <!-- Initial Loading State -->
+                <div class="animate-pulse flex flex-col items-center">
+                    <div class="w-64 h-4 bg-gray-200 rounded mb-4"></div>
+                    <div class="text-scifi-muted tracking-[0.2em] text-xs">MAINTAINING UPLINK...</div>
+                </div>
+
+            </div>
+
+            <!-- Booking Controls (Bottom Center) -->
+            <div
+                class="absolute bottom-10 glass-panel p-6 rounded-2xl w-full max-w-sm flex flex-col gap-4 mx-auto z-30">
+                <div class="flex justify-between items-center border-b border-gray-200/50 pb-2 mb-2">
+                    <h3 class="text-[10px] uppercase tracking-widest text-scifi-muted">Chair Booking System</h3>
+                    <div class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-[10px] text-green-600 font-mono">SYSTEM READY</span>
+                    </div>
+                </div>
+
+                <!-- Add hx-indicator class to these elements to toggle visibility -->
+                <form hx-post="/book" hx-target="#booking-message" hx-swap="innerHTML" hx-indicator="#book-spinner"
+                    class="flex gap-2 items-center justify-between">
+                    <!-- HIDDEN TIMEZONE OFFSET -->
+                    <input type="hidden" name="time_offset" id="time-offset" value="0">
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[8px] uppercase tracking-wider text-gray-400 font-bold">Start</label>
+                        <input type="time" name="start_time"
+                            class="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs focus:border-cyan-400 outline-none w-24 font-mono text-center"
+                            required>
+                    </div>
+                    <span class="text-gray-300 text-xs mt-3">→</span>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[8px] uppercase tracking-wider text-gray-400 font-bold">End</label>
+                        <input type="time" name="end_time"
+                            class="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs focus:border-cyan-400 outline-none w-24 font-mono text-center"
+                            required>
+                    </div>
+
+                    <button type="submit"
+                        class="bg-black text-white h-full px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200/50 mt-3 self-end relative min-w-[80px]">
+                        <span class="htmx-indicator-hide">Book</span>
+                        <span id="book-spinner"
+                            class="htmx-indicator absolute inset-0 flex items-center justify-center">
+                            <span
+                                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        </span>
+                    </button>
+                </form>
+                <div id="booking-message" class="text-[10px] text-center h-4 text-cyan-600 font-mono mt-1 min-h-[1rem]">
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Right Side Chat Panel -->
+        <aside class="w-80 glass-panel border-l border-white/50 h-full flex flex-col relative z-20 shadow-xl"
+            hx-ext="ws" ws-connect="/ws/{{ user.id if user else 0 }}">
+
+            <div class="p-4 border-b border-gray-100/50 flex justify-between items-center">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500">Comms Link</h2>
+                <div class="flex items-center gap-2">
+                    <span id="ws-status-text" class="text-[10px] text-gray-400">CONNECTING...</span>
+                    <!-- Use a script to swap classes on events -->
+                    <span id="ws-status-indicator" class="w-2 h-2 bg-yellow-400 rounded-full shadow-glow"></span>
+                </div>
+            </div>
+
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- Messages will be appended here via WebSocket OOB swaps -->
+                {% if user %}
+                <div class="text-center text-xs text-gray-400 my-4">-- Connected as {{ user.username }} --</div>
+                {% else %}
+                <div class="text-center text-xs text-gray-400 my-4">-- Login to Chat --</div>
+                {% endif %}
+            </div>
+
+            <div class="p-4 bg-white/30">
+                <form ws-send class="flex gap-2">
+                    <input type="text" name="message" placeholder="Transmit..."
+                        class="w-full bg-white/80 border-0 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-300 placeholder-gray-400 transition-all"
+                        {% if not user %}disabled{% endif %} autocomplete="off">
+                </form>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        // WS Debugging & Indicators
+        document.body.addEventListener('htmx:wsOpen', function (evt) {
+            const ind = document.getElementById('ws-status-indicator');
+            const txt = document.getElementById('ws-status-text');
+            if (ind) { ind.className = "w-2 h-2 bg-green-400 rounded-full shadow-glow"; }
+            if (txt) { txt.innerText = "ONLINE"; }
+        });
+        document.body.addEventListener('htmx:wsClose', function (evt) {
+            const ind = document.getElementById('ws-status-indicator');
+            const txt = document.getElementById('ws-status-text');
+            if (ind) { ind.className = "w-2 h-2 bg-red-400 rounded-full animate-pulse"; } // Pulse red
+            if (txt) { txt.innerText = "OFFLINE - RETRYING..."; }
+
+            // Aggressive Reconnect Strategy: Reload page after 3s if connection dies. 
+            // Simple but effective for this prototype.
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        });
+        document.body.addEventListener('htmx:wsError', function (evt) {
+            console.error("WS Error", evt);
+        });
+
+        document.body.addEventListener('htmx:wsAfterSend', function (evt) {
+            const form = evt.detail.elt;
+            if (form && form.tagName === 'FORM') {
+                form.reset();
+            }
+        });
+
+        // Timezone Offset Calculation
+        document.addEventListener("DOMContentLoaded", function () {
+            const offset = new Date().getTimezoneOffset();
+            const input = document.getElementById("time-offset");
+            if (input) {
+                input.value = offset; // Minutes difference from UTC
+            }
+        });
+    </script>
+</body>
+
+</html>
+```

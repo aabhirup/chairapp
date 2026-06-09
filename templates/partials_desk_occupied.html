@@ -1,0 +1,58 @@
+<div class="relative w-full h-full flex items-center justify-center animate-fade-in">
+
+    <!-- FLOOR GLOW (Red/Orange if expiring soon, else Cyan) -->
+    <div
+        class="absolute bottom-[20%] w-[300px] h-[60px] {% if is_warning %}bg-red-500/10{% else %}bg-blue-500/10{% endif %} blur-[50px] rounded-full transition-colors duration-1000">
+    </div>
+
+    <div class="relative z-10 transform">
+
+        <!-- 3D Desk Base -->
+        <img src="/static/chair_iso.png" class="w-[500px] h-auto object-contain drop-shadow-2xl opacity-90"
+            alt="Future Desk Occupied">
+
+        <!-- Occupant PFP (Positioned to look like sitting in chair) -->
+        <!-- Based on ISO view, chair is usually to the right or back. Adjust top/left experimentally for the generated image. 
+             Assuming chair is somewhat central/right. -->
+        <div class="absolute top-[40%] left-[65%] -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+            <div class="relative group">
+                <div
+                    class="absolute -inset-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-500">
+                </div>
+                <img src="{{ current_booking.user.profile_image_url }}" alt="Occupant"
+                    class="relative w-20 h-20 rounded-full border-2 border-white/50 shadow-xl object-cover bg-gray-100">
+            </div>
+        </div>
+
+        <!-- Floatting HUD Interface over desk -->
+        <div class="absolute top-[30%] left-[30%] z-30 transform -rotate-y-12">
+
+            <div class="flex flex-col gap-2 items-center">
+                <!-- NAMEPLATE -->
+                <div
+                    class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-lg border border-white/30 shadow-glass flex items-center gap-2">
+                    <div
+                        class="w-1.5 h-1.5 rounded-full {% if is_warning %}bg-red-500 animate-blink{% else %}bg-green-400{% endif %}">
+                    </div>
+                    <span class="text-xs font-bold tracking-widest text-gray-700 uppercase">{{
+                        current_booking.user.username }}</span>
+                </div>
+
+                <!-- TIMER -->
+                <div class="px-3 py-1 bg-black/80 rounded-full border border-white/10">
+                    <div class="text-[10px] font-mono text-cyan-400 flex items-center gap-2">
+                        <svg class="w-3 h-3 {% if is_warning %}text-red-500 animate-pulse{% endif %}" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span id="booking-timer" class="{% if is_warning %}text-red-500 font-bold{% endif %}">
+                            {{ time_remaining_str }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

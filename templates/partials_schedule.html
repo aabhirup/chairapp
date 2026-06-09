@@ -1,0 +1,20 @@
+<div class="flex flex-col gap-2 mt-4 animate-fade-in-up">
+    <h4 class="text-[10px] uppercase tracking-widest text-scifi-muted mb-1">Upcoming Uplinks</h4>
+    {% if bookings %}
+    <div class="space-y-2 max-h-[80vh] overflow-y-auto pr-2 custom-scrollbar p-2">
+        {% for b in bookings %}
+        <div
+            class="flex flex-col gap-1 bg-white/60 p-3 rounded-xl border border-white/80 shadow-sm relative group hover:scale-[1.02] transition-transform">
+            <!-- Status Dot -->
+            <div class="absolute top-3 right-3 w-1.5 h-1.5 bg-green-400 rounded-full shadow-glow animate-pulse"></div>
+
+            <span class="font-bold text-gray-800 text-sm tracking-wide">{{ b.user.username }}</span>
+            <span class="font-mono text-gray-500 text-xs border-t border-gray-200/50 pt-1 mt-1 block">{{
+                b.start_time.strftime('%H:%M') }} - {{ b.end_time.strftime('%H:%M') }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-xs text-gray-400 italic">No scheduled uplinks. System idle.</div>
+    {% endif %}
+</div>
