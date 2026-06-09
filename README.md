@@ -2,7 +2,7 @@ The Chair
 
 
 
-> A website built to settle the question in any shared space: \*\*who gets to sit in the chair?\*\*
+> A website built to settle the question in any shared space: who gets to sit in the chair?
 
 
 
