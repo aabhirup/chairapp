@@ -2,11 +2,11 @@
 
 
 
-> A website built to settle the most important question in any shared space: \*\*who gets to sit in the chair?\*\*
+> A website built to settle the question in any shared space: \*\*who gets to sit in the chair?\*\*
 
 
 
-This is a side hobby project — a small website that manages access to a single, presumably legendary chair. No more arguments. No more passive-aggressive sticky notes. The website decides.
+This is a side hobby project — a small website that manages access to a single chair. The website decides.
 
 
 
