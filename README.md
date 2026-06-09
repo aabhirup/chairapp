@@ -9,11 +9,3 @@ The Chair
 This is a side hobby project — a small website that manages access to a single chair. The website decides.
 
 
-
-
-\## License
-
-
-
-MIT — free to use, free to sit.
-
