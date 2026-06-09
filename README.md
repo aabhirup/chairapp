@@ -18,7 +18,7 @@ This is a side hobby project — a small website that manages access to a single
 
 
 
-\- Lets people submit their claim to the chair
+\- Lets people submit their claim to the chair for a set amount of time
 
 \- Determines (fairly, or not) who gets to use it
 
@@ -46,7 +46,6 @@ This is a side hobby project — a small website that manages access to a single
 
 
 
-\### Running Locally
 
 
 
@@ -132,7 +131,7 @@ This project was born out of a completely reasonable desire to bring order to ch
 
 
 
-It's a chair website. PRs are welcome if you have strong feelings about chair allocation algorithms.
+It's a chair website.
 
 
 
